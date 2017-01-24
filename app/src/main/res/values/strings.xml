@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="btn_send">Send</string>
+    <string name="txt_hint">Type Message</string>
+    <!--<string name="app_name">Pigeon Messenger</string>-->
+    <string name="choose_device_name">Choose your device name"</string>
+    <string name="ip_not_available">IP not available</string>
+    <string name="app_name">SmartHome</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Username</string>
+    <string name="action_sign_up">Create Account</string>
+    <string name="question_prompt">Security Question</string>
+    <string-array name="question_arrays">
+        <item>What is your home town?</item>
+        <item>What is your favorite meal?</item>
+
+        <item>What is your nick name?</item>
+        <item>Where would you like to live?</item>
+    </string-array>
+
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This username is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+
+</resources>
