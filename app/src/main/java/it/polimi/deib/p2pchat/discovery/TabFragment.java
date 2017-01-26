@@ -60,9 +60,6 @@ public class TabFragment extends Fragment {
         return wiFiChatFragmentList.get(tabNumber - 1);
     }
 
-    public static WiFiP2pServicesFragment getWiFiP2pServicesFragment(){
-        return wiFiP2pServicesFragment;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
