@@ -36,6 +36,7 @@ import it.polimi.deib.p2pchat.discovery.model.LocalP2PDevice;
  * This class works without callback interface, because is necessary to call a huge
  * amount of method inside the {@link it.polimi.deib.p2pchat.discovery.MainActivity}
  * <p></p>
+ * Created by Stefano Cappa on 04/02/15, based on google code samples.
  */
 public class WiFiP2pBroadcastReceiver extends BroadcastReceiver {
 

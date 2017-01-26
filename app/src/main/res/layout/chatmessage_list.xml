@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -10,10 +11,6 @@
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true">
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Slide the bar to change the brightness" />
 
         <TextView
             android:id="@+id/txtPercentage"
@@ -33,9 +30,46 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
-            android:layout_marginTop="34dp"
-            android:layout_below="@+id/textView4"
+            android:layout_marginTop="133dp"
+            android:layout_below="@+id/textView2"
             android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Slide the bar to change the brightness"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="91dp" />
+
+        <TextView
+            android:text="TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="11dp"
+            android:id="@+id/recevedMessage" />
+
+        <ToggleButton
+            android:text="ToggleButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="47dp"
+            android:id="@+id/toggleButton"
+            android:layout_below="@+id/txtPercentage"
+            android:layout_centerHorizontal="true"
+            android:textOff="Silent"
+            android:textOn="Loud" />
+
+        <ToggleButton
+            android:text="ToggleButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/toggleButton"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="26dp"
+            android:id="@+id/bluetoothButton" />
 
     </RelativeLayout>
 </FrameLayout>

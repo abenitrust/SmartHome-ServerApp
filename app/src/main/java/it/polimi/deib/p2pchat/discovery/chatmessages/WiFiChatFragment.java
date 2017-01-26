@@ -1,7 +1,10 @@
 
 package it.polimi.deib.p2pchat.discovery.chatmessages;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.ContentResolver;
+import android.content.Context;
+import android.media.AudioManager;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -16,6 +19,8 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.nio.charset.CharacterCodingException;
 import java.util.ArrayList;
@@ -23,6 +28,7 @@ import java.util.List;
 
 import it.polimi.deib.p2pchat.R;
 import it.polimi.deib.p2pchat.discovery.DestinationDeviceTabList;
+import it.polimi.deib.p2pchat.discovery.chatmessages.waitingtosend.WaitingToSendQueue;
 import it.polimi.deib.p2pchat.discovery.socketmanagers.ChatManager;
 import it.polimi.deib.p2pchat.discovery.services.ServiceList;
 import it.polimi.deib.p2pchat.discovery.services.WiFiP2pService;
@@ -32,10 +38,19 @@ import lombok.Setter;
 
 public class WiFiChatFragment extends Fragment {
 
+
+    @Getter private final List<String> items = new ArrayList<>();
+
+    private TextView chatLine;
+
+    private WiFiChatMessageListAdapter adapter = null;
+
     private static final String TAG = "WiFiChatFragment";
 
     //Seek bar object
     private SeekBar brightbar;
+    private TextView receviedMessage;
+    final BluetoothAdapter bluetoothAdaper = BluetoothAdapter.getDefaultAdapter( );
 
     //Variable to store brightness value
     private int brightness;
@@ -45,6 +60,11 @@ public class WiFiChatFragment extends Fragment {
 
     //Window object, that will store a reference to the current window
     private Window window;
+
+    private  AudioManager mobilemode;
+
+    ToggleButton ringer;
+    ToggleButton bluetooth;
 
     TextView txtPerc;
     /** Called when the activity is first created. */
@@ -80,11 +100,31 @@ public class WiFiChatFragment extends Fragment {
 
 
 
+    /**
+     * Method that combines all the messages inside the
+     * {@link it.polimi.deib.p2pchat.discovery.chatmessages.waitingtosend.WaitingToSendQueue}
+     * in one String and pass this one to the {@link it.polimi.deib.p2pchat.discovery.socketmanagers.ChatManager}
+     * to send the message to other devices.
+     */
     public void sendForcedWaitingToSendQueue() {
-        String combinedMessages="Message";
+
+        Log.d(TAG, "sendForcedWaitingToSendQueue() called");
+
+        String combineMessages = "";
+        List<String> listCopy = WaitingToSendQueue.getInstance().getWaitingToSendItemsList(tabNumber);
+        for (String message : listCopy) {
+            if(!message.equals("") && !message.equals("\n")  ) {
+                combineMessages = combineMessages + "\n" + message;
+            }
+        }
+        combineMessages = combineMessages + "\n";
+
+        Log.d(TAG, "Queued message to send: " + combineMessages);
+
         if (chatManager != null) {
             if (!chatManager.isDisable()) {
-                chatManager.write((combinedMessages).getBytes());
+                chatManager.write((combineMessages).getBytes());
+                WaitingToSendQueue.getInstance().getWaitingToSendItemsList(tabNumber).clear();
             } else {
                 Log.d(TAG, "Chatmanager disabled, impossible to send the queued combined message");
             }
@@ -93,14 +133,34 @@ public class WiFiChatFragment extends Fragment {
     }
 
 
+    /**
+     * Method to add a message to the Fragment's listView and notifies this update to
+     * {@link it.polimi.deib.p2pchat.discovery.chatmessages.WiFiChatMessageListAdapter}.
+     * @param readMessage String that represents the message to add.
+     */
+    public void pushMessage(String readMessage) {
+        items.add(readMessage);
+        adapter.notifyDataSetChanged();
+    }
 
+    /**
+     * Method that updates the {@link it.polimi.deib.p2pchat.discovery.chatmessages.WiFiChatMessageListAdapter}.
+     */
+    public void updateChatMessageListAdapter() {
+        if(adapter!=null) {
+            adapter.notifyDataSetChanged();
+        }
+    }
 
     /**
      * Method that add the text in the chatLine EditText to the WaitingToSendQueue and try to reconnect
      * to the service associated to the device of this tab, with index tabNumber.
      */
-    private void addToWaitingToSendQueueAndTryReconnect() {
+    private void addToWaitingToSendQueueAndTryReconnect(String data) {
+        //add message to the waiting to send queue
+        WaitingToSendQueue.getInstance().getWaitingToSendItemsList(tabNumber).add(data);
 
+        //try to reconnect
         WifiP2pDevice device = DestinationDeviceTabList.getInstance().getDevice(tabNumber - 1);
         if(device!=null) {
             WiFiP2pService service = ServiceList.getInstance().getServiceByDevice(device);
@@ -114,11 +174,16 @@ public class WiFiChatFragment extends Fragment {
         }
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.chatmessage_list, container, false);
 
+        viewReceviedMessage(view);
 
+        handleButton(view);
+
+        handleBluetoothBtn(view);
 
 
 //        CheckBox    test= (CheckBox)view.findViewById(R.id.checkBox2);
@@ -210,6 +275,65 @@ public class WiFiChatFragment extends Fragment {
     }
 
 
+    public void viewReceviedMessage(View view){
+
+        receviedMessage = (TextView) view.findViewById(R.id.recevedMessage);
+        receviedMessage.setText("message");
+
+    }
+
+    public void setToggleButton(String button) {
+        ringer.toggle();
+    }
+
+    public void handleButton(View view){
+        ringer = (ToggleButton) view.findViewById(R.id.toggleButton);
+
+//        mobilemode= (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
+
+        ringer.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                String data="SP - "+ringer.getText().toString();
+                SendMessage(data);
+
+
+            }
+
+
+        });
+    }
+
+    public void handleBluetoothBtn(View view){
+        bluetooth = (ToggleButton) view.findViewById(R.id.bluetoothButton);
+
+        bluetooth.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+
+                if( !bluetoothAdaper.isEnabled( ) )
+                {
+                    bluetoothAdaper.enable( );
+                }else{
+                    bluetoothAdaper.disable();
+                }
+
+
+
+            }
+        });
+    }
+
+    public void setBluetooth(String blue){
+        bluetoothAdaper.enable();
+    }
+
+    public void setMessage(String message){
+        receviedMessage.setText(message);
+    }
+
     public void handleScreenBrigthness(View view){
 
         //Instantiate seekbar object
@@ -259,7 +383,9 @@ public class WiFiChatFragment extends Fragment {
                 layoutpars.screenBrightness = brightness / (float)255;
                 //Apply attribute changes to this window
                 window.setAttributes(layoutpars);
-                chatManager.write((Integer.toString(brightness)).getBytes());
+
+                String data="SB - "+Integer.toString(brightness);
+                SendMessage(data);
 
             }
 
@@ -276,7 +402,7 @@ public class WiFiChatFragment extends Fragment {
                 // TODO Auto-generated method stub
                 //Set the minimal brightness level
                 //if seek bar is 20 or any value below
-                if(progress<=10)
+                if(progress<=1)
                 {
                     //Set the brightness to 20
                     brightness=10;
@@ -297,5 +423,56 @@ public class WiFiChatFragment extends Fragment {
 
             }
         });
+    }
+
+    public void changeBrigthness(String data){
+        int value=0;
+        try {
+            value = Integer.parseInt(data);
+        } catch(NumberFormatException nfe) {
+            System.out.println("Could not parse " + nfe);
+            value=0;
+        }
+
+        //Set the system brightness using the brightness variable value
+        Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, value);
+        //Get the current window attributes
+        WindowManager.LayoutParams layoutpars = window.getAttributes();
+
+        //Set the brightness of this window
+        layoutpars.screenBrightness = value / (float)255;
+        //Apply attribute changes to this window
+        window.setAttributes(layoutpars);
+
+        //Calculate the brightness percentage
+        float perc = (value /(float)255)*100;
+
+        brightbar.setProgress(value);
+
+        //Set the brightness percentage
+        txtPerc.setText((int)perc + "%");
+
+
+    }
+
+
+    private  boolean SendMessage(String data){
+        if (chatManager != null) {
+            if (!chatManager.isDisable()) {
+                Log.d(TAG, "chatmanager state: enable");
+
+                //send message to the ChatManager's outputStream.
+                chatManager.write(data.getBytes());
+                return true;
+            } else {
+                Log.d(TAG, "chatmanager disabled, trying to send a message with tabNum= " + tabNumber);
+
+                addToWaitingToSendQueueAndTryReconnect(data);
+                return false;
+            }
+        } else {
+            Log.d(TAG, "chatmanager is null");
+            return false;
+        }
     }
 }

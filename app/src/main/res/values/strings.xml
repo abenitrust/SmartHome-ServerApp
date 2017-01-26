@@ -6,7 +6,7 @@
     <!--<string name="app_name">Pigeon Messenger</string>-->
     <string name="choose_device_name">Choose your device name"</string>
     <string name="ip_not_available">IP not available</string>
-    <string name="app_name">SmartHome</string>
+    <string name="app_name">SmartHome / Server</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Username</string>

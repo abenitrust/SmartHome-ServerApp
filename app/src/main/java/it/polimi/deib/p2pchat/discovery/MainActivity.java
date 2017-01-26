@@ -77,8 +77,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Main Activity
-
+ * Main Activity of Pidgeon / WiFiDirect MultiChat
+ * <p></p>
+ * Created by Stefano Cappa on 04/02/15.
  */
 public class MainActivity extends ActionBarActivity implements
         WiFiP2pServicesFragment.DeviceClickListener,
@@ -125,6 +126,7 @@ public class MainActivity extends ActionBarActivity implements
     Handler getHandler() {
         return handler;
     }
+
 
     /**
      * Method called by WiFiChatFragment using the
@@ -278,6 +280,7 @@ public class MainActivity extends ActionBarActivity implements
             }
         });
     }
+
 
     /**
      * Method to notifyDataSetChanged to the adapter of the
@@ -617,7 +620,7 @@ public class MainActivity extends ActionBarActivity implements
             socketHandler = new ClientSocketHandler(this.getHandler(), p2pInfo.groupOwnerAddress);
             socketHandler.start();
 
-            //if this device is not the Group Owner, i hide the GO's ImageView
+            //if this device is the Group Owner, i set the GO's ImageView
             //of the cardview inside the WiFiP2pServicesFragment.
             TabFragment.getWiFiP2pServicesFragment().hideLocalDeviceGoIcon();
         }
@@ -717,18 +720,26 @@ public class MainActivity extends ActionBarActivity implements
                             readMessage = readMessage.replace("+", "");
                             readMessage = readMessage.replace(Configuration.MAGICADDRESSKEYWORD, "Mac Address");
                         }
-//                        tabFragment.getChatFragmentByTab(tabNum).pushMessage("Device: " + readMessage);
+
+                        //Check the message Here ....
+                        // Agreement ...   BR - integer  > BrightnessControl
+                        //                 BL ->  ON/OFF > Bluetooth control
+                        //                 PR -> Loud/Silent > Sound Profile
+                        //                 GP -> GPS
+                        //
+                        tabFragment.getChatFragmentByTab(tabNum).setMessage("Device: " + readMessage);
+                        tabFragment.getChatFragmentByTab(tabNum).changeBrigthness(readMessage);
+                        tabFragment.getChatFragmentByTab(tabNum).setToggleButton(readMessage);
+
                     } else {
                         if (!readMessage.contains(Configuration.MAGICADDRESSKEYWORD)) {
-//                            tabFragment.getChatFragmentByTab(tabNum).pushMessage("Device: " + readMessage);
-                            Log.e(TAG, "Valid Message: " + readMessage);
-
+                            tabFragment.getChatFragmentByTab(tabNum).setMessage("Device: " + readMessage);
                         }
                     }
 
                     //if the WaitingToSendQueue is not empty, send all his messages to target device.
 //                    if (!WaitingToSendQueue.getInstance().getWaitingToSendItemsList(tabNum).isEmpty()) {
-                        tabFragment.getChatFragmentByTab(tabNum).sendForcedWaitingToSendQueue();
+//                        tabFragment.getChatFragmentByTab(tabNum).sendForcedWaitingToSendQueue();
 //                    }
                 } else {
                     Log.e("handleMessage", "Error tabNum = " + tabNum + " because is <=0");

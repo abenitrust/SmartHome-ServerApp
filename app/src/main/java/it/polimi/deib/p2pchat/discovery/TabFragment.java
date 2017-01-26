@@ -60,7 +60,6 @@ public class TabFragment extends Fragment {
         return wiFiChatFragmentList.get(tabNumber - 1);
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.activity_tab, container, false);

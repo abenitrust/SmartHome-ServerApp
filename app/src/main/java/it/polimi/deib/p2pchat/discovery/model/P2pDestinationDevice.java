@@ -25,6 +25,8 @@ import lombok.Setter;
  * This class is useful because can be used to extends the basic {@code WifiP2pDevice}'s
  * functionalities to include the ip address, that is not available in the original Android's API.
  * It's an abstraction of a {@code WifiP2pDevice}.
+ * <p></p>
+ * Created by Stefano Cappa on 01/03/15.
  */
 public class P2pDestinationDevice {
 

@@ -34,6 +34,7 @@ import it.polimi.deib.p2pchat.discovery.utilities.UseOnlyPrivateHere;
  * {@link it.polimi.deib.p2pchat.discovery.model.P2pDestinationDevice} index.
  * Because the first tab is reserved to {@link it.polimi.deib.p2pchat.discovery.services.WiFiP2pServicesFragment}.
  * <p></p>
+ * Created by Stefano Cappa on 12/02/15.
  */
 public class DestinationDeviceTabList {
 
